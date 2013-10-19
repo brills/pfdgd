@@ -1,0 +1,6 @@
+include_rules
+
+LIBS += bhtree/libbhtree.a
+: foreach *.cc |> !cc |>
+: foreach test/*.o | $(LIBS) |> $(CXX) %f $(LIBS) -o %o |> %B
+

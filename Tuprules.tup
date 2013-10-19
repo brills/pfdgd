@@ -1,0 +1,7 @@
+CFLAGS += -Wall -pedantic -std=c++11
+CFLAGS += -g 
+CXX := clang++
+AR := ar
+
+!cc = |> $(CXX) $(CFLAGS) -c %f -o %o |> %B.o
+!ar = |> $(AR) crs %o %f |>
