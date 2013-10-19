@@ -24,28 +24,32 @@ class BHTree {
 	 };
 
   BHTree(const Quad& quad, BHTree* parent);
+  ~BHTree() {}
 
   void Insert(const Body& body);
-  void UpdateForce(Body* body);
+  void UpdateForce(Body* body) const;
 
 	void Dump() const;
 
  private:
+	const double Theta = 0.4;
+
   inline bool IsLeaf() const {
 		for (int i = 0; i < kNumChild; ++i) {
-			if (child_[i] != NULL) return false;
+			if (child_[i].get() != NULL) return false;
 		}
 		return true;
   }
 
 	void Split();
 	void UpdatePath();
+	void UpdateForce_rec(Body* body) const;
 	// Deprecated
 	void CalculateCenterOfMass();
 
 	unique_ptr<Body> body_;
   Quad quad_;
-	BHTree* child_[kNumChild];
+	unique_ptr<BHTree> child_[kNumChild];
   BHTree* parent_;
 };
 

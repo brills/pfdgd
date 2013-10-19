@@ -10,7 +10,7 @@ using namespace std;
 BHTree::BHTree(const Quad& quad, BHTree* parent)
     : quad_(quad), parent_(parent) {
   for (int i = 0; i < kNumChild; ++i) {
-    child_[i] = NULL;
+    child_[i].reset(NULL);
   }
 }
 
@@ -41,6 +41,13 @@ void BHTree::Insert(const Body& body) {
   assert(false);
 }
 
+void BHTree::UpdateForce(Body* body) const {
+	body->SwitchForce();
+	UpdateForce_rec(body);
+}
+
+
+
 void BHTree::Dump() const {
 	printf("----- Node -----\n");
 	quad_.Dump();
@@ -56,7 +63,7 @@ void BHTree::Dump() const {
 		body_->Dump();
 	}
 	for (int i = 0; i < kNumChild; ++i) {
-		if (child_[i]) {
+		if (child_[i].get() != NULL) {
 			child_[i]->Dump();
 		}
 	}
@@ -68,7 +75,7 @@ void BHTree::Split() {
 	vector<Quad> new_quad(kNumChild);
 	quad_.Split(&new_quad);
 	for (int i = 0; i < kNumChild; ++i) {
-		child_[i] = new BHTree(new_quad[i], this);
+		child_[i].reset(new BHTree(new_quad[i], this));
 	}
 	
 	for (int i = 0; i < kNumChild; ++i) {
@@ -99,7 +106,7 @@ void BHTree::CalculateCenterOfMass() {
   assert(!IsLeaf());
   double total_mass = 0, cx = 0, cy = 0;
   for (int i = 0; i < kNumChild; ++i) {
-    if (child_[i] && child_[i]->body_) {
+    if (child_[i].get() != NULL && child_[i]->body_) {
       const Body& body = *child_[i]->body_;
       double mass = body.get_mass();
       double x = body.get_px();
@@ -114,3 +121,19 @@ void BHTree::CalculateCenterOfMass() {
 	body_->set_mass(total_mass);
 }
 
+void BHTree::UpdateForce_rec(Body* body) const {
+	assert(body_.get() != NULL);
+	Body& b = *body;
+	double quot = quad_.Length() / b.DistanceTo(*body_);
+	if (IsLeaf() || quot <= Theta) {
+		b.AddForce(*body_, false);
+		return;
+	}
+
+	for (int i = 0; i < kNumChild; ++i) {
+		if (child_[i]->body_.get() != NULL) {
+			child_[i]->UpdateForce_rec(body);
+		}
+	}
+	
+}

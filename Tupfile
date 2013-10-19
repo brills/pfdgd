@@ -1,6 +1,7 @@
 include_rules
 
 LIBS += bhtree/libbhtree.a
+LDFLAGS += -lSDL_gfx -lSDL
 : foreach *.cc |> !cc |>
-: foreach test/*.o | $(LIBS) |> $(CXX) %f $(LIBS) -o %o |> %B
+: foreach test/*.o | $(LIBS) |> $(CXX) $(LDFLAGS) %f $(LIBS) -o %o |> %B
 

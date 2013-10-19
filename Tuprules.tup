@@ -1,5 +1,6 @@
 CFLAGS += -Wall -pedantic -std=c++11
 CFLAGS += -g 
+LDFLAGS:=
 CXX := clang++
 AR := ar
 
