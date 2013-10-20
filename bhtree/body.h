@@ -1,7 +1,11 @@
 #ifndef _BHTREE_BODY_H_
 #define _BHTREE_BODY_H_
 
+#include "force.h"
+
 #include <math.h>
+
+class Force;
 
 class Body {
  public:
@@ -33,7 +37,7 @@ class Body {
 	}
 	//Leapfrog integrator
   void Update(double dt);
-  void AddForce(const Body& other, bool edge);
+  void AddForce(const Body& other, const Force& force);
 	void Combine(const Body& other);
 	void Dump() const;
 	inline void SwitchForce() {
@@ -47,6 +51,8 @@ class Body {
 
 	inline double get_px() const {return px_;}
 	inline double get_py() const {return py_;}
+	inline double get_vx() const {return vx_;}
+	inline double get_vy() const {return vy_;}
 	inline double get_mass() const {return mass_;}
 
  private:

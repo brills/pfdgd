@@ -1,6 +1,7 @@
 #include "bhtree/body.h"
 #include "bhtree/quad.h"
 #include "bhtree/bhtree.h"
+#include "bhtree/force.h"
 
 #include "SDL.h"
 #include "SDL_gfxPrimitives.h"
@@ -45,13 +46,15 @@ int main(int argc, char** argv) {
         gameRunning = false;
       }
     }
-			bhtree.reset(new BHTree(main_quad, NULL));
-			for (int i = 0; i < N; ++i) {
-				bhtree->Insert(mybodies[i]);
-			}
+		Force* gforce = new GForce();
+		bhtree.reset(new BHTree(main_quad, NULL, gforce));
+		for (int i = 0; i < N; ++i) {
+			bhtree->Insert(mybodies[i]);
+		}
 
 			// Update force
 			for (int i = 0; i < N; ++i) {
+				mybodies[i].SwitchForce();
 				bhtree->UpdateForce(&mybodies[i]);
 				mybodies[i].Update(1 / (double)FPS);
 			}

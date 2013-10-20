@@ -1,9 +1,11 @@
 #include "body.h"
+#include "force.h"
 
 #include <stdio.h>
 
 void Body::Dump() const {
-	printf("body (%.3lf, %.3lf), m=%.3lf\n", px_, py_, mass_);
+  printf("body (%.3lf, %.3lf), m=%.3lf, f = (%lf, %lf)\n", px_, py_, mass_, fx_,
+         fy_);
 }
 
 void Body::Combine(const Body& other) {
@@ -37,17 +39,13 @@ void Body::Update(double dt) {
 		py_ -= dpy;
 		vy_ = -vy_;
 	}
+	vx_ *= 0.4;
+	vy_ *= 0.4;
 }
 
-// Fixme for fdgd
-void Body::AddForce(const Body& other, bool edge) {
-	const double G = 6.67e-6;
-	const double EPS = 3e-2;
-	double dx = other.px_ - px_;
-	double dy = other.py_ - py_;
-	double dist = sqrt(dx*dx + dy*dy);
-	if (dist == 0) return;
-	double F = (G * mass_ * other.mass_) / (dist * dist + EPS * EPS);
-	fx_ += F * dx / dist;
-	fy_ += F * dy / dist;
+void Body::AddForce(const Body& other, const Force& force) {
+	pair<double, double> F = force(*this, other);
+	fx_ += F.first;
+	fy_ += F.second;
 }
+

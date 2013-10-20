@@ -23,7 +23,7 @@ class BHTree {
 		 kNumChild
 	 };
 
-  BHTree(const Quad& quad, BHTree* parent);
+  BHTree(const Quad& quad, BHTree* parent, Force* force);
   ~BHTree() {}
 
   void Insert(const Body& body);
@@ -32,7 +32,7 @@ class BHTree {
 	void Dump() const;
 
  private:
-	const double Theta = 0.4;
+	const double Theta = 0.05;
 
   inline bool IsLeaf() const {
 		for (int i = 0; i < kNumChild; ++i) {
@@ -43,14 +43,15 @@ class BHTree {
 
 	void Split();
 	void UpdatePath();
-	void UpdateForce_rec(Body* body) const;
 	// Deprecated
 	void CalculateCenterOfMass();
 
 	unique_ptr<Body> body_;
   Quad quad_;
 	unique_ptr<BHTree> child_[kNumChild];
+	// Owned by the creator!!
   BHTree* parent_;
+	Force* force_;
 };
 
 #endif

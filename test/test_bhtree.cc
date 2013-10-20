@@ -24,7 +24,7 @@ int main() {
 	printf("*** total_mass=%lf, c-o-m=(%.3lf, %.3lf)\n", total_mass, cx, cy);
 
   Quad main_quad(0, 1, 0, 1);
-  BHTree* pmytree = new BHTree(main_quad, NULL);
+  BHTree* pmytree = new BHTree(main_quad, NULL, new Gravity());
 	BHTree& mytree = *pmytree;
   for (int i = 0; i < N; ++i) {
     mytree.Insert(mybodies[i]);
